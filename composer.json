@@ -1,0 +1,23 @@
+{
+    "name": "crixuamg/laravel-responsable",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "CrixuAMG\\Responsable\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Christian Kaal",
+            "email": "christiankaal@gmail.com"
+        }
+    ],
+    "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "CrixuAMG\\Responsable\\ResponsableServiceProvider"
+            ]
+        }
+    }
+}
