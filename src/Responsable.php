@@ -2,13 +2,29 @@
 
 namespace CrixuAMG\Responsable;
 
-class Responsable
+use \Illuminate\Contracts\Support\Responsable as ResponsableContract;
+
+class Responsable implements ResponsableContract
 {
     public function __construct(private $data) { }
 
     private function manager(): ResponsableManager
     {
         return app()->make(ResponsableManager::class);
+    }
+
+    public function toResponse($request)
+    {
+        if ($request->wantsJson()) return $this->json();
+
+        throw new \LogicException('Unable to resolve request response type.');
+    }
+
+    public function json()
+    {
+        return $this->manager()
+            ->driver('json')
+            ->setData($this->data);
     }
 
     public function view(callable $action)
