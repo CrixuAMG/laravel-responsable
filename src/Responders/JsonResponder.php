@@ -15,9 +15,4 @@ class JsonResponder extends AbstractResponder
 
         return json_encode($this->data);
     }
-
-    public function __toString(): string
-    {
-        return $this->toResponse(app()->make(Request::class));
-    }
 }

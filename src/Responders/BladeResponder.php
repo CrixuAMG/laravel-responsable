@@ -2,16 +2,10 @@
 
 namespace CrixuAMG\Responsable\Responders;
 
-class BladeResponder extends AbstractResponder
+class BladeResponder extends ViewResponder
 {
-    public function toResponse($request)
+    public function render()
     {
-        $template = $this->data[0] ?? null;
-
-        if (!is_string($template)) throw new \InvalidArgumentException('First argument must be a string');
-        $data = $this->data;
-        array_shift($data);
-
-        return view($template, ...$data);
+        return view($this->renderTemplate(), $this->wrapData());
     }
 }

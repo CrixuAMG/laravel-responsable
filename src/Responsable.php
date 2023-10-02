@@ -2,7 +2,7 @@
 
 namespace CrixuAMG\Responsable;
 
-use \Illuminate\Contracts\Support\Responsable as ResponsableContract;
+use Illuminate\Contracts\Support\Responsable as ResponsableContract;
 
 class Responsable implements ResponsableContract
 {
@@ -17,7 +17,7 @@ class Responsable implements ResponsableContract
     {
         if ($request->wantsJson()) return $this->json();
 
-        throw new \LogicException('Unable to resolve request response type.');
+        return $this->view();
     }
 
     public function json()
@@ -27,13 +27,13 @@ class Responsable implements ResponsableContract
             ->setData($this->data);
     }
 
-    public function view(callable $action)
+    public function view(string $template = null, string|false $wrap = null)
     {
-        $actionResult = call_user_func($action, $this->data);
-
         return $this->manager()
             ->driver(config('responsable.view_driver'))
-            ->setData($actionResult);
+            ->setTemplate($template)
+            ->setWrap($wrap)
+            ->setData($this->data);
     }
 
     public function redirect(callable $action)
