@@ -39,7 +39,13 @@ abstract class ViewResponder extends AbstractResponder
 
     protected function wrapData()
     {
-        return $this->qualifiedWrapper() ? [$this->qualifiedWrapper() => $this->data] : $this->data;
+        $data = $this->data;
+
+        if ($data instanceof \JsonSerializable) {
+            $data = $data->jsonSerialize();
+        }
+
+        return $this->qualifiedWrapper() ? [$this->qualifiedWrapper() => $data] : $data;
     }
 
     protected function qualifiedWrapper()
@@ -50,8 +56,11 @@ abstract class ViewResponder extends AbstractResponder
                 ->afterLast('\\');
 
             $controller = $action->before('Controller@');
+            $method = $action->after('@');
 
-            $wrap = $controller->snake()->plural()->toString();
+            $wrap = $controller->snake()
+                ->when(in_array($method, ['index', 'list', 'overview']), fn($string) => $string->plural())
+                ->toString();
         }
 
         return $wrap;
