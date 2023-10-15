@@ -12,11 +12,9 @@ class Responsable implements ResponsableContract
     {
     }
 
-    public static function from(mixed $data = null, bool $autoRenderResponse = true)
+    public static function from(mixed $data = null)
     {
-        $instance = new static($data);
-
-        return $autoRenderResponse ? $instance->render() : $instance;
+        return new static($data);
     }
 
     public function render()
