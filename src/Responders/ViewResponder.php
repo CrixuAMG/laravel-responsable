@@ -3,19 +3,21 @@
 namespace CrixuAMG\Responsable\Responders;
 
 use Illuminate\Support\Str;
-use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Support\Stringable;
 
 abstract class ViewResponder extends AbstractResponder
 {
-    public function toResponse($request)
+    private Stringable $controller;
+
+    private Stringable $method;
+
+    public function __construct()
     {
-        $render = $this->render();
+        $action = Str::of(request()->route()->action['controller'])
+            ->afterLast('\\');
 
-        if ($render instanceof Responsable) {
-            $render = $render->toResponse($request);
-        }
-
-        return $render;
+        $this->controller = $action->before('Controller@');
+        $this->method = $action->after('@');
     }
 
     abstract protected function render();
@@ -24,14 +26,8 @@ abstract class ViewResponder extends AbstractResponder
     {
         $template = $this->template;
 
-        if (!$template) {
-            $action = Str::of(request()->route()->action['controller'])
-                ->afterLast('\\');
-
-            $controller = $action->before('Controller@');
-            $method = $action->after('@');
-
-            $template = sprintf('%s/%s', $controller->plural(), $method->studly());
+        if (! $template) {
+            $template = sprintf('%s/%s', $this->controller->plural(), $this->method->studly());
         }
 
         return $template;
@@ -41,10 +37,6 @@ abstract class ViewResponder extends AbstractResponder
     {
         $data = $this->data;
 
-        if ($data instanceof \JsonSerializable) {
-            $data = $data->jsonSerialize();
-        }
-
         return $this->qualifiedWrapper() ? [$this->qualifiedWrapper() => $data] : $data;
     }
 
@@ -52,14 +44,8 @@ abstract class ViewResponder extends AbstractResponder
     {
         $wrap = $this->wrap;
         if ($wrap === null) {
-            $action = Str::of(request()->route()->action['controller'])
-                ->afterLast('\\');
-
-            $controller = $action->before('Controller@');
-            $method = $action->after('@');
-
-            $wrap = $controller->snake()
-                ->when(in_array($method, ['index', 'list', 'overview']), fn($string) => $string->plural())
+            $wrap = $this->controller->snake()
+                ->when(in_array($this->method, ['index', 'list', 'overview']), fn ($string) => $string->plural())
                 ->toString();
         }
 

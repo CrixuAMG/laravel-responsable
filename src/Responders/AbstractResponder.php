@@ -4,9 +4,8 @@ namespace CrixuAMG\Responsable\Responders;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Support\Responsable;
 
-abstract class AbstractResponder implements Responsable
+abstract class AbstractResponder
 {
     public $data;
     private $attributes;
@@ -31,10 +30,5 @@ abstract class AbstractResponder implements Responsable
     public function __get(string $name)
     {
         return $this->attributes[$name] ?? null;
-    }
-
-    public function __toString(): string
-    {
-        return $this->toResponse(app()->make(Request::class));
     }
 }
