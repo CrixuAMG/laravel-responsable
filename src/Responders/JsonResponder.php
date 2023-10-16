@@ -3,9 +3,10 @@
 namespace CrixuAMG\Responsable\Responders;
 
 use Illuminate\Http\Request;
+use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class JsonResponder extends AbstractResponder
+class JsonResponder extends AbstractResponder implements Responsable
 {
     public function toResponse($request)
     {
