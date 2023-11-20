@@ -2,7 +2,6 @@
 
 namespace CrixuAMG\Responsable;
 
-use CrixuAMG\Responsable\Responders\JsonResponder;
 use CrixuAMG\Responsable\Responders\RedirectResponder;
 use Illuminate\Contracts\Support\Responsable as ResponsableContract;
 
@@ -23,7 +22,7 @@ class Responsable implements ResponsableContract
             return $this->json();
         }
 
-        return $this->view()->render();
+        return $this->view();
     }
 
     private function manager(): ResponsableManager
@@ -31,11 +30,13 @@ class Responsable implements ResponsableContract
         return app()->make(ResponsableManager::class);
     }
 
-    public function json(): JsonResponder
+    public function json()
     {
-        return $this->manager()
-            ->driver('json')
-            ->setData($this->data);
+        return response()->json(
+            $this->manager()
+                ->driver('json')
+                ->setData($this->data),
+        );
     }
 
     public function view(string $template = null, string|false $wrap = null)
@@ -44,7 +45,8 @@ class Responsable implements ResponsableContract
             ->driver(config('responsable.view_driver'))
             ->setTemplate($template)
             ->setWrap($wrap)
-            ->setData($this->data);
+            ->setData($this->data)
+            ->render();
     }
 
     public function redirect(callable $action): RedirectResponder
@@ -57,6 +59,12 @@ class Responsable implements ResponsableContract
 
     public function toResponse($request)
     {
-        return $this->render();
+        $renderedResponse = $this->render();
+
+        if ($renderedResponse instanceof ResponsableContract) {
+            $renderedResponse = $renderedResponse->toResponse($request);
+        }
+
+        return $renderedResponse;
     }
 }

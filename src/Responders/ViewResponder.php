@@ -26,7 +26,7 @@ abstract class ViewResponder extends AbstractResponder
     {
         $template = $this->template;
 
-        if (! $template) {
+        if (!$template) {
             $template = sprintf('%s/%s', $this->controller->plural(), $this->method->studly());
         }
 
@@ -37,6 +37,8 @@ abstract class ViewResponder extends AbstractResponder
     {
         $data = $this->data;
 
+        $data = method_exists($data, 'toArray') ? $data->toArray(request()) : $data;
+
         return $this->qualifiedWrapper() ? [$this->qualifiedWrapper() => $data] : $data;
     }
 
@@ -45,7 +47,7 @@ abstract class ViewResponder extends AbstractResponder
         $wrap = $this->wrap;
         if ($wrap === null) {
             $wrap = $this->controller->snake()
-                ->when(in_array($this->method, ['index', 'list', 'overview']), fn ($string) => $string->plural())
+                ->when(in_array($this->method, ['index', 'list', 'overview']), fn($string) => $string->plural())
                 ->toString();
         }
 
