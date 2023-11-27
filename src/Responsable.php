@@ -32,11 +32,9 @@ class Responsable implements ResponsableContract
 
     public function json()
     {
-        return response()->json(
-            $this->manager()
+        return $this->manager()
                 ->driver('json')
-                ->setData($this->data),
-        );
+                ->setData($this->data);
     }
 
     public function view(string $template = null, string|false $wrap = null)
