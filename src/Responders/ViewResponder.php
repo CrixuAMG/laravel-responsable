@@ -37,8 +37,8 @@ abstract class ViewResponder extends AbstractResponder
     {
         $data = $this->data;
 
-        if (!$template) {
-            $template = sprintf('%s/%s', $this->controller->plural(), $this->method->studly());
+        if (is_object($data)) {
+            $data = method_exists($data, 'toArray') ? $data->toArray(request()) : $data;
         }
 
         return $this->qualifiedWrapper() ? [$this->qualifiedWrapper() => $data] : $data;
