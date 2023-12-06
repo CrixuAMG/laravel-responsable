@@ -47,11 +47,14 @@ class Responsable implements ResponsableContract
             ->render();
     }
 
-    public function redirect(callable $action): RedirectResponder
+    public function redirect(string $route, array $parameters = [], int $statusCode = 302, array $headers = []): RedirectResponder
     {
         return $this->manager()
             ->driver('redirect')
-            ->setAction($action)
+            ->setRoute($route)
+            ->setParameters($parameters)
+            ->setStatusCode($statusCode)
+            ->setHeaders($headers)
             ->setData($this->data);
     }
 
