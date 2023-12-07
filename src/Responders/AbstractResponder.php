@@ -49,6 +49,7 @@ abstract class AbstractResponder
         $data = $this->data;
 
         if (is_object($data)) {
+            if (method_exists($data, 'withoutWrapping')) $data->withoutWrapping();
             $data = method_exists($data, 'toArray') ? $data->toArray(request()) : $data;
         }
 
