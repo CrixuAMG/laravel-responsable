@@ -20,7 +20,7 @@ class RedirectResponder extends AbstractResponder implements Responsable
             ->getByName($this->route)
             ->bind($request);
 
-        $data = $this->wrapData();
+        $data = array_merge($this->wrapData(), $this->parameters);
         $bindingFields = $route->bindingFields();
 
         foreach ($route->parameterNames() as $parameterName) {
