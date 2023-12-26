@@ -2,6 +2,7 @@
 
 namespace CrixuAMG\Responsable\Responders;
 
+use CrixuAMG\Responsable\Services\ForwardsConfiguration;
 use Illuminate\Support\Str;
 use Illuminate\Support\Stringable;
 
@@ -14,7 +15,11 @@ abstract class ViewResponder extends AbstractResponder
         $template = $this->template;
 
         if (!$template) {
-            $template = sprintf('%s/%s', $this->controller->plural(), $this->method->studly());
+            $template = sprintf(
+                '%s/%s',
+                ForwardsConfiguration::getTemplateRoot() ?? $this->controller->plural(),
+                $this->method->studly()
+            );
         }
 
         return $template;

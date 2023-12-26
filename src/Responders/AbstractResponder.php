@@ -37,6 +37,9 @@ abstract class AbstractResponder
 
             return $this;
         }
+        if ($string->startsWith('get')) {
+            return $this->attributes[$string->after('get')->camel()->toString()] ?? null;
+        }
     }
 
     public function __get(string $name)

@@ -3,12 +3,18 @@
 namespace CrixuAMG\Responsable;
 
 use CrixuAMG\Responsable\Responders\RedirectResponder;
+use CrixuAMG\Responsable\Services\ForwardsConfiguration;
 use Illuminate\Contracts\Support\Responsable as ResponsableContract;
 
 class Responsable implements ResponsableContract
 {
     public function __construct(private $data)
     {
+    }
+
+    public function __call(string $name, array $arguments)
+    {
+        ForwardsConfiguration::$name(...$arguments);
     }
 
     public static function from(mixed $data = null)
