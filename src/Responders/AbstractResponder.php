@@ -2,6 +2,7 @@
 
 namespace CrixuAMG\Responsable\Responders;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Stringable;
@@ -50,16 +51,31 @@ abstract class AbstractResponder
     protected function wrapData()
     {
         $data = $this->data;
+        $resolvedResource = [];
 
         if (is_object($data)) {
-            if (method_exists($data, 'withoutWrapping')) $data->withoutWrapping();
-            $data = method_exists($data, 'resolve') ? $data->resolve(request()) : $data;
+            if (method_exists($data, 'withoutWrapping')) {
+                $data->withoutWrapping();
+            }
+
+            if (method_exists($data, 'resolve')) {
+                $resolvedResource = $data->response()->getData(true);
+
+                $data = $resolvedResource['data'];
+            }
         }
 
-        return $this->qualifiedWrapper() ? [$this->qualifiedWrapper() => $data] : $data;
+        $resolvedData = $this->qualifiedWrapper() ? [$this->qualifiedWrapper() => $data] : $data;
+
+        return array_merge(
+            $resolvedData,
+            is_array($data) && array_is_list($data) && $this->qualifiedWrapper()
+                ? [$this->qualifiedWrapper('_meta') => Arr::except($resolvedResource, 'data')]
+                : []
+        );
     }
 
-    protected function qualifiedWrapper()
+    protected function qualifiedWrapper(string $append = null)
     {
         $wrap = $this->wrap;
         if ($wrap === null) {
@@ -67,6 +83,8 @@ abstract class AbstractResponder
                 ->when(in_array($this->method, ['index', 'list', 'overview']), fn($string) => $string->plural())
                 ->toString();
         }
+
+        if ($append) $wrap = Str::of($wrap)->append($append)->snake()->toString();
 
         return $wrap;
     }
