@@ -6,6 +6,12 @@ use CrixuAMG\Responsable\Responders\RedirectResponder;
 use CrixuAMG\Responsable\Services\ForwardsConfiguration;
 use Illuminate\Contracts\Support\Responsable as ResponsableContract;
 
+/**
+ * @method getTemplateRoot()
+ * @method setTemplateRoot(string $templateRoot)
+ * @method getWithoutWrapping()
+ * @method setWithoutWrapping(bool $withoutWrapping = true)
+ */
 class Responsable implements ResponsableContract
 {
     public function __construct(private $data)
@@ -15,6 +21,8 @@ class Responsable implements ResponsableContract
     public function __call(string $name, array $arguments)
     {
         ForwardsConfiguration::$name(...$arguments);
+
+        return $this;
     }
 
     public static function from(mixed $data = null)

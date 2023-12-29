@@ -2,6 +2,7 @@
 
 namespace CrixuAMG\Responsable\Responders;
 
+use CrixuAMG\Responsable\Services\ForwardsConfiguration;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -77,6 +78,8 @@ abstract class AbstractResponder
 
     protected function qualifiedWrapper(string $append = null)
     {
+        if (ForwardsConfiguration::getWithoutWrapping()) return null;
+
         $wrap = $this->wrap;
         if ($wrap === null) {
             $wrap = $this->controller->snake()
